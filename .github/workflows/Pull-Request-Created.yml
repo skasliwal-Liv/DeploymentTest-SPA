@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
  
 env:
-  APP_NAME: mymicroservice
+  APP_NAME: myfirstspa
   ACR_HELM_REPO_NAME: helm/apptemplate
   ACR_HELM_CHART_NAME: apptemplate
   AKS_NAME: aksclusterdemo
