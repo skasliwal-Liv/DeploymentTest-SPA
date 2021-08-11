@@ -21,11 +21,13 @@ jobs:
     - name: 'generate version tags'
       id: vars
       run: |
-         echo ::set-output name=version_tag::$(git rev-parse --short=7 ${{ github.sha }})
-         echo  Version-${{ steps.vars.outputs.version_tag }}
-         echo ::set-output name=url_tag::pr-${{ env.APP_NAME }}-${{ github.event.number }}
+         echo ::set-output name=url_tag_suffix::${{ github.event.number }}
+         if [ -z "${url_tag_suffix}" ]; then
+         echo ::set-output name=url_tag_suffix::$(git rev-parse --short=7 ${{ github.sha }})
+         fi
+         echo ::set-output name=url_tag::pr-${{ env.APP_NAME }}-${url_tag_suffix}
          echo  URL TAG -${{ steps.vars.outputs.url_tag }}
-         echo ::set-output name=pr_url::${{ env.APP_NAME }}-${{ github.event.number }}.${{env.HOST_URL}}
+         echo ::set-output name=pr_url::${url_tag}.${{env.HOST_URL}}
          echo  PR URL-${{ steps.vars.outputs.pr_url }}
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
@@ -39,15 +41,15 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ steps.vars.outputs.version_tag }}
-        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ steps.vars.outputs.version_tag }}
+        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
 
     - name: 'Publish App Image to ACR'
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: ${{ secrets.RESOURCE_GROUP }}
         dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ steps.vars.outputs.version_tag }}
+        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
         registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
@@ -74,7 +76,7 @@ jobs:
             --install \
             --wait \
             --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}} \
-            --set image.tag=${{ steps.vars.outputs.version_tag }} \
+            --set image.tag=${{ github.sha }} \
             --set replicaCount=1  \
             --set ingress.hosts[0].host=${{ steps.vars.outputs.pr_url }}  \
             --set ingress.hosts[0].paths[0].path=/  \
