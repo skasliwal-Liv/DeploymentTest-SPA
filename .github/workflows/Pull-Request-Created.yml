@@ -21,13 +21,11 @@ jobs:
     - name: 'generate version tags'
       id: vars
       run: |
-         echo  ${{ github.event.number }}
-         echo  ${{ github.sha }}
-         echo "this is a test before"
-         echo ::set-output name=url_tag_suffix::${{ github.event.number }}
+
+         url_tag_suffix=${{ github.event.number }}
          if [ -z "${url_tag_suffix}" ]; then
          echo "this is a test inside"
-         echo ::set-output name=url_tag_suffix::$(git rev-parse --short=7 ${{ github.sha }})
+         url_tag_suffix=$(git rev-parse --short=7 ${{ github.sha }})
          fi
          echo ::set-output name=url_tag::pr-${{ env.APP_NAME }}-${url_tag_suffix}
          echo ::set-output name=pr_url::${url_tag}.${{env.HOST_URL}}
