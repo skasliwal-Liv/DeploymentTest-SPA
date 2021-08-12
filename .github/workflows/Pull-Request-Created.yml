@@ -76,8 +76,8 @@ jobs:
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          FAKEAPI_IMAGE = "${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi:latest"
-          echo  ${FAKEAPI_IMAGE}
+          fake_api_image = `${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi:latest`
+          echo  fake_api_image - ${fake_api_image}
           
                
 #    - name: publish to AKS
