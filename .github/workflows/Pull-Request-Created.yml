@@ -35,7 +35,7 @@ jobs:
          echo  URL TAG -${{steps.vars.outputs.url_tag}}
          echo  PR URL-${{steps.vars.outputs.pr_url}}
          echo  PR URL-${{steps.vars.outputs.fakeapi_image}}
-         sed -i -e 's/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g' deployment.yaml
+         deployment.yaml | sed -i "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g"
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
