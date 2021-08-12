@@ -78,8 +78,9 @@ jobs:
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
           $FAKEAPI_IMAGE = ${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi:latest
           echo  $FAKEAPI_IMAGE
-          cat deployment.yaml | sed "s/{{FAKEAPI_IMAGE}}/$FAKEAPI_IMAGE/g" | kubectl apply -f -
-     
+          $template=`cat deployment.yaml | sed "s/{{FAKEAPI_IMAGE}}/$FAKEAPI_IMAGE/g"`
+          echo  $template
+               
 #    - name: publish to AKS
 #      run: |
 #          helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
