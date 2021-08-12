@@ -20,18 +20,7 @@ readinessProbe:
 
 volumesAndMounts:
   enabled: true
-  volumesMounts:
-    - name: json-server-db-volume
-      mountPath: /fakeapi-data
-    
-  volumes:
-    - name: json-server-db-volume
-      projected:
-        sources:
-          - configMap:
-              name: json-server-db-config
-          - configMap:
-                name: json-server-route-config
+
 
 
 nameOverride: "json-server-test"
