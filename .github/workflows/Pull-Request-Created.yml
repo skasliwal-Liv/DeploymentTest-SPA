@@ -35,7 +35,10 @@ jobs:
          echo  URL TAG -${{steps.vars.outputs.url_tag}}
          echo  PR URL-${{steps.vars.outputs.pr_url}}
          echo  PR URL-${{steps.vars.outputs.fakeapi_image}}
-         deployment.yaml | sed -i "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g"
+    - name: sed
+      uses: lefherz/action-sed@master
+      with:
+        args: sed -ie "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g" fake-backend/deployment.yaml
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
