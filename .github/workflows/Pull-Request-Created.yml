@@ -73,16 +73,20 @@ jobs:
           az aks get-credentials -n ${{ env.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }} --admin
     - name: publish to AKS
       run: |
-          helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
-            --namespace ${{ steps.vars.outputs.url_tag }} \
-            --create-namespace \
-            --install \
-            --wait \
-            --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi \
-            --set image.tag=latest \
-            --set replicaCount=1  \
-            --set livenessProbe.enabled=false \
-            --set readinessProbe.enabled=false
+          kubectl create namespace ${{ steps.vars.outputs.url_tag }}
+          kubectl create configmap json-server-test-config --from-file=fake-backend/db.json
+#   - name: publish to AKS
+#     run: |
+#         helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
+#           --namespace ${{ steps.vars.outputs.url_tag }} \
+#           --create-namespace \
+#           --install \
+#           --wait \
+#           --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi \
+#           --set image.tag=latest \
+#           --set replicaCount=1  \
+#           --set livenessProbe.enabled=false \
+#           --set readinessProbe.enabled=false
              
            
      
