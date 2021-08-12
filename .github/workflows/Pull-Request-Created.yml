@@ -88,10 +88,10 @@ jobs:
            --set readinessProbe.enabled=false \
            --set volumeMounts.enabled=true \
            --set volumes.enabled=true \
-           --set-string volumeMounts.Values[0].name="json-server-test-volume" \
-           --set-string volumeMounts.Values[0].mountPath="/fakeapi-data" \
-           --set-string volumes.Values[0].name="json-server-test-volume" \
-           --set-string volumes.Values[0].configMap.name="json-server-test-config" \
+           --set volumeMounts.Values[0].name=json-server-test-volume \
+           --set volumeMounts.Values[0].mountPath=/fakeapi-data \
+           --set volumes.Values[0].name=json-server-test-volume \
+           --set volumes.Values[0].configMap.name=json-server-test-config \
              
            
      
