@@ -51,19 +51,23 @@ jobs:
       run: |
           az aks get-credentials -n ${{ env.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }} --admin
 
-    - name: publish Fake API to AKS
+    - name: replace Fake API values
       run: |
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-db-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-route-config --from-file=route.json -n ${{ steps.vars.outputs.url_tag }}
           sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/--ROOT_URL--/${{ steps.vars.outputs.pr_url }}/g" values.yaml > values1.yaml
-          helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
+          
+    - name: replace Fake API values
+      run: |
+          cd fake-backend
+          helm upgrade -f values1.yaml ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
            --namespace ${{ steps.vars.outputs.url_tag }} \
            --create-namespace \
            --install \
-           --wait \
-           -f values1.yaml
+           --wait 
+           
 
    
    
