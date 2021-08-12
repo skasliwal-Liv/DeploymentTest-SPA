@@ -78,7 +78,7 @@ jobs:
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          template=`cat "deploy.yml.template" | sed "s/{{MYVARNAME}}/${{ steps.vars.outputs.url_tag }}/g"`
+          template=`cat "deployment.yaml" | sed "s/{{MYVARNAME}}/${{ steps.vars.outputs.url_tag }}/g"`
           echo  template - ${template}
           
                
