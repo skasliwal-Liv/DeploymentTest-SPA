@@ -78,7 +78,7 @@ jobs:
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          cat deployment.yaml | sed "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g" | kubectl apply -f -
+          cat deployment.yaml | sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g" | kubectl apply -f -
           
           
                

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: json-server-test
-        image: ##fake_api_image##
+        image: --REGISTRY_LOGIN_SERVER--/fakeapi:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 4301
