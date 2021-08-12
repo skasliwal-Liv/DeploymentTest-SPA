@@ -74,27 +74,11 @@ jobs:
     - name: publish to AKS
       run: |
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
-          kubectl create configmap json-server-test-config --from-file=fake-backend/db.json -n ${{ steps.vars.outputs.url_tag }}
-    - name: publish to AKS
-      run: |
-         helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
-           --namespace ${{ steps.vars.outputs.url_tag }} \
-           --create-namespace \
-           --install \
-           --wait \
-           --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi \
-           --set image.tag=latest \
-           --set replicaCount=1  \
-           --set livenessProbe.enabled=false \
-           --set readinessProbe.enabled=false \
-           --set volumeMounts.enabled=true \
-           --set volumes.enabled=true \
-           --set-string volumeMounts.Values[0].name="json-server-test-volume" \
-           --set-string volumeMounts.Values[0].mountPath="/fakeapi-data" \
-           --set-string volumes.Values[0].name="json-server-test-volume" \
-           --set-string volumes.Values[0].configMap.name="json-server-test-config" \
-             
-           
+          cd fake-backend
+          kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
+          $FAKEAPI_IMAGE = ${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi:latest
+          echo  $FAKEAPI_IMAGE
+          cat deployment.yaml | sed "s/{{FAKEAPI_IMAGE}}/$FAKEAPI_IMAGE/g" | kubectl apply -f -
      
 #    - name: publish to AKS
 #      run: |
