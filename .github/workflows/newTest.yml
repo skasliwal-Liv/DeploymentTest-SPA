@@ -57,7 +57,7 @@ jobs:
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-db-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-route-config --from-file=route.json -n ${{ steps.vars.outputs.url_tag }}
-          cat values.yaml | sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/----ROOT_URL----/${{ steps.vars.outputs.pr_url }}/g" | helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} -f -
+          cat values.yaml | sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/--ROOT_URL--/${{ steps.vars.outputs.pr_url }}/g" | helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} -f -
 
    
    
