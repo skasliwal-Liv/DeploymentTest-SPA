@@ -19,7 +19,7 @@ readinessProbe:
   path: /
 
 volumesAndMounts:
-  enabled: false
+  enabled: true
   volumesMounts:
     - name: json-server-db-volume
       mountPath: /fakeapi-data
