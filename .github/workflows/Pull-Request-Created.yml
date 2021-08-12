@@ -97,7 +97,9 @@ jobs:
            --set ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
            --set ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt-production \
            --set ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"=$1 \
-           --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/use-regex"="true"
+           --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/use-regex"="true" \
+           --set livenessProbe.path=/\ \
+           --set readinessProbe.path=/\ \
 
 #   - uses: actions/github-script@v4
 #     name: 'Create github pr comment and deployment'
