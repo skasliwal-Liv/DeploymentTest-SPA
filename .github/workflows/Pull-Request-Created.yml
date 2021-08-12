@@ -28,11 +28,13 @@ jobs:
          echo ::set-output name=url_tag::pr-${{ env.APP_NAME }}-${url_tag_suffix}
          echo ::set-output name=pr_url::pr-${{ env.APP_NAME }}-${url_tag_suffix}.${{env.HOST_URL}}
          echo  URL TAG Suffix -${url_tag_suffix}
+         echo ::set-output name=fakeapi_image::"${{ secrets.REGISTRY_LOGIN_SERVER }}/fakeapi:latest"
     - name: 'echo version tags'
       id: echovars
       run: |
          echo  URL TAG -${{steps.vars.outputs.url_tag}}
          echo  PR URL-${{steps.vars.outputs.pr_url}}
+         echo  PR URL-${{steps.vars.outputs.fakeapi_image}}
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
@@ -74,7 +76,6 @@ jobs:
     - name: publish to AKS
       run: |
           cd fake-backend
-          fake_api_image=`${{ secrets.REGISTRY_LOGIN_SERVER }}\/fakeapi:latest`
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
           
