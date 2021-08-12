@@ -23,12 +23,11 @@ spec:
         volumeMounts:
         - name: json-server-db-volume
           mountPath: /fakeapi-data
-        - name: json-server-route-volume
-          mountPath: /fakeapi-data
       volumes:
       - name: json-server-db-volume
-        configMap:
-          name: json-server-db-config
-      - name: json-server-route-volume
-        configMap:
-          name: json-server-route-config
+        projected:
+          sources:
+            - configMap:
+                name: json-server-db-config
+            - configMap:
+                name: json-server-route-config
