@@ -78,8 +78,8 @@ jobs:
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          template=`cat "deployment.yaml" | sed "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g"`
-          echo ${template} 
+          cat deployment.yaml | sed "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g" | kubectl apply -f -
+          
           
                
 #    - name: publish to AKS
