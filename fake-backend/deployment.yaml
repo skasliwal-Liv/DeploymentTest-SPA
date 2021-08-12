@@ -31,3 +31,28 @@ spec:
                 name: json-server-db-config
             - configMap:
                 name: json-server-route-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fake-backend-api
+  labels:
+    app: fake-backend-api
+    service: fake-backend-api-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30005
+      protocol: TCP
+      name: http
+    - port: 9090
+      targetPort: 9090
+      nodePort: 30015
+      protocol: TCP
+      name: httpmetric  
+  selector:
+    service: basket  
+  
