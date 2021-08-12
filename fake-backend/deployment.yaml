@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: json-server-test
+  name: json-server-fake-api
   labels:
-    app: json-server-test
+    app: json-server-fake-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: json-server-test
+      app: json-server-fake-api
   template:
     metadata:
       labels:
-        app: json-server-test
+        app: json-server-fake-api
     spec:
       containers:
       - name: json-server-test
@@ -21,9 +21,14 @@ spec:
         ports:
         - containerPort: 4301
         volumeMounts:
-        - name: json-server-test-volume
+        - name: json-server-db-volume
+          mountPath: /fakeapi-data
+        - name: json-server-route-volume
           mountPath: /fakeapi-data
       volumes:
-      - name: json-server-test-volume
+      - name: json-server-db-volume
         configMap:
-          name: json-server-test-config
+          name: json-server-db-config
+      - name: json-server-route-volume
+        configMap:
+          name: json-server-route-config
