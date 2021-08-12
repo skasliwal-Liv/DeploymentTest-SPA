@@ -86,12 +86,11 @@ jobs:
            --set replicaCount=1  \
            --set livenessProbe.enabled=false \
            --set readinessProbe.enabled=false \
-           --set volumeMounts.enabled=true \
-           --set volumes.enabled=true \
-           --set volumeMounts.Values[0].name=json-server-test-volume \
-           --set volumeMounts.Values[0].mountPath=/fakeapi-data \
-           --set volumes.Values[0].name=json-server-test-volume \
-           --set volumes.Values[0].configMap.name=json-server-test-config \
+           --set volumesAndMounts.enabled=true \
+           --set volumesAndMounts.volumesMounts[0].name=json-server-test-volume \
+           --set volumesAndMounts.volumesMounts[0].mountPath=/fakeapi-data \
+           --set volumesAndMounts.volumes[0].name=json-server-test-volume \
+           --set volumesAndMounts.volumes[0].configMap.name=json-server-test-config \
              
            
      
