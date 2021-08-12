@@ -35,6 +35,7 @@ jobs:
          echo  URL TAG -${{steps.vars.outputs.url_tag}}
          echo  PR URL-${{steps.vars.outputs.pr_url}}
          echo  PR URL-${{steps.vars.outputs.fakeapi_image}}
+         sed -i -e 's/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g' deployment.yaml
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
@@ -78,8 +79,7 @@ jobs:
           cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-test-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          sed "s/##fake_api_image##/${{ steps.vars.outputs.fakeapi_image }}/g" deployment.yaml > deployment1.yaml
-          kubectl apply -f deployment1.yaml -n ${{ steps.vars.outputs.url_tag }}
+          kubectl apply -f deployment.yaml -n ${{ steps.vars.outputs.url_tag }}
           
                
 #    - name: publish to AKS
