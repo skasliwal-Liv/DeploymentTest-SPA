@@ -62,7 +62,7 @@ jobs:
     - name: replace Fake API values
       run: |
           cd fake-backend
-          helm upgrade -f values1.yaml ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
+          helm upgrade -f values1.yaml ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_REPO_NAME}} \
            --namespace ${{ steps.vars.outputs.url_tag }} \
            --create-namespace \
            --install \
