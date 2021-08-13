@@ -33,6 +33,24 @@ spec:
                 name: json-server-route-config
 
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: json-server-fake-api
+  labels:
+    app: json-server-fake-api
+    service: json-server-fake-api-svc
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: json-server-fake-api  
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
