@@ -36,23 +36,43 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fake-backend-api
+  name: json-server-fake-api
   labels:
-    app: fake-backend-api
-    service: fake-backend-api-svc
+    app: json-server-fake-api
+    service: json-server-fake-api-svc
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30005
+    - port: 4301
+      targetPort: 4301
       protocol: TCP
       name: http
-    - port: 9090
-      targetPort: 9090
-      nodePort: 30015
-      protocol: TCP
-      name: httpmetric  
   selector:
-    service: basket  
-  
+    app: json-server-fake-api  
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: json-server-fake-api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - --ROOT_URL--
+    secretName: tls-secret
+  rules:
+  - host: --ROOT_URL--
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: json-server-fake-api
+            port: 
+              number: 4301
