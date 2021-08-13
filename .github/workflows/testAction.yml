@@ -1,0 +1,73 @@
+name: Pull-Request-Created
+on: 
+  workflow_dispatch:
+ 
+env:
+  APP_NAME: myfirstspa
+  ACR_HELM_REPO_NAME: helm/apptemplate
+  ACR_HELM_CHART_NAME: apptemplate
+  AKS_NAME: aksclusterdemo
+  HOST_URL: pr-review.liventuspoc.com
+jobs:
+  build:
+    name: Spin_Preview_Environment
+    #if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+     # checkout the repo
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v2
+    - name: 'generate version tags'
+      id: vars
+      run: |
+         url_tag_suffix=${{ github.event.number }}
+         if [ -z "${url_tag_suffix}" ]; then
+         url_tag_suffix=$(git rev-parse --short=7 ${{ github.sha }})
+         fi
+         echo ::set-output name=url_tag::pr-${{ env.APP_NAME }}-${url_tag_suffix}
+         echo ::set-output name=pr_url::pr-${{ env.APP_NAME }}-${url_tag_suffix}.${{env.HOST_URL}}
+         echo  URL TAG Suffix -${url_tag_suffix}
+   
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+
+   
+    - name: Pull HELM chart
+      run: |
+         export HELM_EXPERIMENTAL_OCI=1
+         echo '${{ secrets.REGISTRY_PASSWORD }}' | helm registry login ${{ secrets.REGISTRY_LOGIN_SERVER }} --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin 
+         helm chart pull ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ACR_HELM_REPO_NAME }}:latest
+         helm chart export ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ACR_HELM_REPO_NAME }}:latest
+    
+    - name: Login to AKS
+      run: |
+          az aks get-credentials -n ${{ env.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }} --admin
+    
+
+    - name: publish Frontend App to AKS
+      run: |
+         helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
+           --namespace ${{ steps.vars.outputs.url_tag }} \
+           --create-namespace \
+           --install \
+           --wait \
+           --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}} \
+           --set nameOverride=${{env.APP_NAME}} \
+           --set image.tag=d3dd35bbe9e9ccf8c1aab9641d700c6d4088cdd8 \
+           --set replicaCount=1  \
+           --set ingress.hosts[0].host=${{ steps.vars.outputs.pr_url }}  \
+           --set ingress.hosts[0].paths[0].path=/  \
+           --set ingress.hosts[0].paths[0].pathType=Prefix \
+           --set ingress.tls[0].hosts[0]=${{ steps.vars.outputs.pr_url }}  \
+           --set ingress.tls[0].secretName=tls-secret \
+           --set ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
+           --set ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt-production \
+           --set ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"=$1 \
+           --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/use-regex"="true" \
+           --set livenessProbe.path=/\ \
+           --set readinessProbe.path=/\ \
+           --set volumesAndMounts.enabled=true \
