@@ -72,7 +72,5 @@ spec:
       - path: /
         pathType: Prefix
         backend:
-          service:
-            name: json-server-fake-api-svc
-            port: 
-              number: 4301
+          serviceName: json-server-fake-api-svc
+          servicePort: 4301
