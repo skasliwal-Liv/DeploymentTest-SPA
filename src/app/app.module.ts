@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
+import  Config  from 'src/config.json';
 
 // TODO: Alphabetize these
 import { AppRoutingModule } from './app-routing.module';
@@ -33,7 +34,7 @@ import { AboutComponent } from './areas/about/pages/about/about.component';
   providers: [
     AppComponent,
     BackendService,
-    { provide: 'BACKEND_BASE_URL', useFactory: () => environment.apiBaseUrl }
+    { provide: 'BACKEND_BASE_URL', useFactory: () => Config.BASE_URL }
   ],
   exports: [
     HeaderComponent
