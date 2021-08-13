@@ -57,7 +57,7 @@ jobs:
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-db-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
           kubectl create configmap json-server-route-config --from-file=route.json -n ${{ steps.vars.outputs.url_tag }}
-          sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/--ROOT_URL--/${{ steps.vars.outputs.pr_url }}/g" values.yaml > values1.yaml
+          sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/--ROOT_URL--/${{ steps.vars.outputs.pr_url }}/g" deployment.yaml > values1.yaml
           
     - name: replace Fake API values
       run: |
