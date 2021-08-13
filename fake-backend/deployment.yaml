@@ -19,7 +19,7 @@ spec:
         image: --REGISTRY_LOGIN_SERVER--/fakeapi:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 4301
+        - containerPort: 80
         volumeMounts:
         - name: json-server-db-volume
           mountPath: /fakeapi-data
@@ -43,8 +43,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 4301
-      targetPort: 4301
+    - port: 80
+      targetPort: 80
       protocol: TCP
       name: http
   selector:
@@ -75,4 +75,4 @@ spec:
           service:
             name: json-server-fake-api-svc
             port: 
-              number: 4301
+              number: 80
