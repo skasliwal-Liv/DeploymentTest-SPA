@@ -46,7 +46,12 @@ jobs:
     - name: Login to AKS
       run: |
           az aks get-credentials -n ${{ env.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }} --admin
-    
+
+    - name: publish Fake API to AKS
+      run: |
+          kubectl create namespace ${{ steps.vars.outputs.url_tag }}
+          kubectl create configmap config-volume-source --from-file=fake-backend/config.json -n ${{ steps.vars.outputs.url_tag }}
+         
 
     - name: publish Frontend App to AKS
       run: |
@@ -71,3 +76,7 @@ jobs:
            --set livenessProbe.path=/\ \
            --set readinessProbe.path=/\ \
            --set volumesAndMounts.enabled=true \
+           --set volumesAndMounts.volumes[0].name=config-volume \
+           --set volumesAndMounts.volumes[0].projected.sources[0].configMap.name=config-volume-source \
+           --set volumesAndMounts.volumesMounts[0].name=config-volume \
+           --set volumesAndMounts.volumesMounts[0].mountPath=/usr/share/nginx/html/assets \
