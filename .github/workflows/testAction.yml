@@ -50,7 +50,6 @@ jobs:
     - name: publish Fake API to AKS
       run: |
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
-          kubectl create configmap config-volume-source --from-file=fake-backend/config.json -n ${{ steps.vars.outputs.url_tag }}
          
 
     - name: publish Frontend App to AKS
@@ -62,6 +61,7 @@ jobs:
            --wait \
            --set image.repository=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}} \
            --set nameOverride=${{env.APP_NAME}} \
+           --set fullnameOverride=${{env.APP_NAME}}
            --set image.tag=d3dd35bbe9e9ccf8c1aab9641d700c6d4088cdd8 \
            --set replicaCount=1  \
            --set ingress.hosts[0].host=${{ steps.vars.outputs.pr_url }}  \
@@ -74,9 +74,4 @@ jobs:
            --set ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"=$1 \
            --set-string ingress.annotations."nginx\.ingress\.kubernetes\.io/use-regex"="true" \
            --set livenessProbe.path=/\ \
-           --set readinessProbe.path=/\ \
-           --set volumesAndMounts.enabled=true \
-           --set volumesAndMounts.volumes[0].name=config-volume \
-           --set volumesAndMounts.volumes[0].projected.sources[0].configMap.name=config-volume-source \
-           --set volumesAndMounts.volumesMounts[0].name=config-volume \
-           --set volumesAndMounts.volumesMounts[0].mountPath=/usr/share/nginx/html/assets \
+           --set readinessProbe.path=/\ 
