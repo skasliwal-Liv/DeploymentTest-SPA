@@ -72,7 +72,7 @@ spec:
   tls:
   - hosts:
     - --ROOT_URL--
-    secretName: tls-secret
+    secretName: tls-secret-fake-api
   rules:
   - host: --ROOT_URL--
     http:
