@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-import  Config  from 'src/config.json';
+import  Config  from '../assets/config.json';
 
 // TODO: Alphabetize these
 import { AppRoutingModule } from './app-routing.module';

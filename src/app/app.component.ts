@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import Config from "../config.json";
+import Config from "../assets/config.json";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
