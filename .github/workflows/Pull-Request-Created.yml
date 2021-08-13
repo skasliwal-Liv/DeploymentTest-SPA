@@ -33,18 +33,21 @@ jobs:
       run: |
          echo  URL TAG -${{steps.vars.outputs.url_tag}}
          echo  PR URL-${{steps.vars.outputs.pr_url}}
+   
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: 'Build and push Docker image locally'
+    - name: 'Docker Login to Registry'
       uses: azure/docker-login@v1
       with:
        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
        username: ${{ secrets.REGISTRY_USERNAME }}
        password: ${{ secrets.REGISTRY_PASSWORD }}
-    - run: |
+   
+    - name: Build Docker Image
+      run: |
        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
 
@@ -63,7 +66,6 @@ jobs:
     - name: Pull HELM chart
       run: |
          export HELM_EXPERIMENTAL_OCI=1
-          # Helm Login to ACR
          echo '${{ secrets.REGISTRY_PASSWORD }}' | helm registry login ${{ secrets.REGISTRY_LOGIN_SERVER }} --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin 
          helm chart pull ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ACR_HELM_REPO_NAME }}:latest
          helm chart export ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ACR_HELM_REPO_NAME }}:latest
@@ -71,13 +73,15 @@ jobs:
     - name: Login to AKS
       run: |
           az aks get-credentials -n ${{ env.AKS_NAME }} -g ${{ secrets.RESOURCE_GROUP }} --admin
+    
     - name: publish Fake API to AKS
       run: |
-          cd fake-backend
           kubectl create namespace ${{ steps.vars.outputs.url_tag }}
-          kubectl create configmap json-server-db-config --from-file=db.json -n ${{ steps.vars.outputs.url_tag }}
-          kubectl create configmap json-server-route-config --from-file=route.json -n ${{ steps.vars.outputs.url_tag }}
-          cat deployment.yaml | sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g" | kubectl apply -n ${{ steps.vars.outputs.url_tag }} -f -
+          kubectl create configmap json-server-db-config --from-file=fake-backend/db.json -n ${{ steps.vars.outputs.url_tag }}
+          kubectl create configmap json-server-route-config --from-file=fake-backend/route.json -n ${{ steps.vars.outputs.url_tag }}
+          sed "s/--REGISTRY_LOGIN_SERVER--/${{ secrets.REGISTRY_LOGIN_SERVER }}/g; s/--ROOT_URL--/fakeapi-${{ steps.vars.outputs.pr_url }}/g" fake-backend/deployment.yaml > fake-backend/deployment1.yaml
+          kubectl apply -f fake-backend/deployment1.yaml -n ${{ steps.vars.outputs.url_tag }} 
+         
     - name: publish Frontend App to AKS
       run: |
          helm upgrade ${{ steps.vars.outputs.url_tag }} ./${{env.ACR_HELM_CHART_NAME}} \
