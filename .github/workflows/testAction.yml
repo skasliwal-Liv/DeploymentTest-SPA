@@ -48,8 +48,8 @@ jobs:
 
     - name: Build Docker Image
       run: |
-       echo "`jq '.BASE_URL="https://google.com"' src/config.json`" > src/config.json
-       
+       echo "`jq '.BASE_URL="https://fakeapi-${{ steps.vars.outputs.pr_url }}"' src/config.json`" > src/config.json
+
     - name: Build Docker Image
       run: |
        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.APP_NAME}}:${{ github.sha }}
