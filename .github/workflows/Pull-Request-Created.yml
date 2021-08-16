@@ -6,7 +6,7 @@ env:
   APP_NAME: myfirstspa
   ACR_HELM_REPO_NAME: helm/apptemplate
   ACR_HELM_CHART_NAME: apptemplate
-  AKS_NAME: aksclusterdemo
+  AKS_NAME: myaksdemoagw
   HOST_URL: pr-review.liventuspoc.com
 jobs:
   build:
